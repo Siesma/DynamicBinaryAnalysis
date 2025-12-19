@@ -1,0 +1,137 @@
+{
+  "total_program_instructions": 1453,
+  "threads_assumed": 8,
+  "loops": [
+    {
+      "nodes": [
+        "0x401990",
+        "0x4019b4",
+        "0x4019c3",
+        "0x4019a4"
+      ],
+      "instruction_count": 15,
+      "loop_fraction": 0.01032346868547832,
+      "load_blocks": 1,
+      "store_blocks": 1,
+      "op_hist": {
+        "mov": 7,
+        "add": 2,
+        "call": 2,
+        "test": 1,
+        "jne": 2,
+        "cmp": 1
+      }
+    },
+    {
+      "nodes": [
+        "0x401640",
+        "0x401601",
+        "0x4015a0",
+        "0x4015e3",
+        "0x401784",
+        "0x401745",
+        "0x40160c",
+        "0x40162d",
+        "0x4016b0",
+        "0x401611",
+        "0x401738",
+        "0x4015f2",
+        "0x401695",
+        "0x4015d8",
+        "0x40175a"
+      ],
+      "instruction_count": 121,
+      "loop_fraction": 0.08327598072952512,
+      "load_blocks": 9,
+      "store_blocks": 9,
+      "op_hist": {
+        "movsd": 32,
+        "addsd": 10,
+        "subsd": 4,
+        "movapd": 7,
+        "mulsd": 6,
+        "comisd": 2,
+        "jb": 2,
+        "mov": 18,
+        "call": 4,
+        "jmp": 1,
+        "add": 5,
+        "cmp": 6,
+        "je": 3,
+        "jne": 5,
+        "test": 2,
+        "xor": 1,
+        "nop": 1,
+        "divsd": 1,
+        "xorpd": 1,
+        "sqrtsd": 1,
+        "andpd": 2,
+        "maxsd": 1,
+        "cvttsd2si": 1,
+        "cdqe": 1,
+        "lea": 3,
+        "sar": 1
+      }
+    },
+    {
+      "nodes": [
+        "0x4014fb",
+        "0x401506"
+      ],
+      "instruction_count": 8,
+      "loop_fraction": 0.0055058499655884375,
+      "load_blocks": 1,
+      "store_blocks": 1,
+      "op_hist": {
+        "mov": 3,
+        "call": 1,
+        "add": 1,
+        "movsd": 1,
+        "cmp": 1,
+        "jne": 1
+      }
+    }
+  ],
+  "connectivity": {
+    "reachability": {
+      "LOOP_0": [],
+      "LOOP_1": [],
+      "LOOP_2": []
+    },
+    "loop_components": [
+      [
+        "LOOP_0"
+      ],
+      [
+        "LOOP_1"
+      ],
+      [
+        "LOOP_2"
+      ]
+    ],
+    "dominators": {
+      "LOOP_0": [],
+      "LOOP_1": [],
+      "LOOP_2": []
+    },
+    "postdominators": {
+      "LOOP_0": [],
+      "LOOP_1": [],
+      "LOOP_2": []
+    },
+    "parallelizable_sets": {
+      "LOOP_0": [
+        "LOOP_1",
+        "LOOP_2"
+      ],
+      "LOOP_1": [
+        "LOOP_0",
+        "LOOP_2"
+      ],
+      "LOOP_2": [
+        "LOOP_0",
+        "LOOP_1"
+      ]
+    }
+  }
+}
