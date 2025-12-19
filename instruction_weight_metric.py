@@ -11,6 +11,7 @@ INSTR_WEIGHTS = {
     "ret": 0
 }
 
+
 def compute_I(loop, weights):
     I = 0
     for op, count in loop["op_hist"].items():
@@ -18,11 +19,14 @@ def compute_I(loop, weights):
         I += weight * count
     return I
 
+
 def mean(values):
     return sum(values) / len(values)
 
+
 def stddev(values, mu):
     return math.sqrt(sum((x - mu) ** 2 for x in values) / len(values))
+
 
 def median(values):
     values = sorted(values)
@@ -31,6 +35,7 @@ def median(values):
     if n % 2 == 0:
         return (values[mid - 1] + values[mid]) / 2
     return values[mid]
+
 
 def main(json_path):
     with open(json_path, "r") as f:
@@ -62,10 +67,10 @@ def main(json_path):
     print(f"  Min I(l): {min_:.2f}")
     print(f"  Max I(l): {max_:.2f}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 instruction_weight_metric.py loops.json")
         sys.exit(1)
 
     main(sys.argv[1])
-

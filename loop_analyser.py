@@ -119,4 +119,3 @@ if __name__ == "__main__":
     print(f"Loaded {len(loops)} loops from {loops_file}")
     for i, loop in enumerate(loops):
         visualize_loop(loop, i)
-

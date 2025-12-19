@@ -8,10 +8,12 @@ from collections import Counter
 import angr
 import networkx as nx
 import matplotlib
+
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 
 def block_info(proj, block):
     hist = Counter()
@@ -30,6 +32,7 @@ def block_info(proj, block):
     except Exception:
         pass
     return dict(hist), has_load, has_store
+
 
 def build_cfg(binary_path):
     proj = angr.Project(binary_path, auto_load_libs=False)
@@ -100,12 +103,14 @@ def build_cfg(binary_path):
 
     return G, block_data, func_graph, functions_by_entry
 
+
 def find_loops(G):
     loops = []
     for scc in nx.strongly_connected_components(G):
         if len(scc) > 1:
             loops.append(list(scc))
     return loops
+
 
 def find_loops_heuristic(G, block_data):
     loops = []
@@ -116,6 +121,7 @@ def find_loops_heuristic(G, block_data):
                 if succ < addr:
                     loops.append([addr, succ])
     return loops
+
 
 def loop_statistics(loops, block_data, total_program_insns, threads=8):
     loop_infos = []
@@ -135,7 +141,7 @@ def loop_statistics(loops, block_data, total_program_insns, threads=8):
                 store_count += 1
             op_hist.update(b["op_hist"])
         loop_fraction = total_insns / total_program_insns
-        if(total_insns > 1000):
+        if (total_insns > 1000):
             print(total_program_insns)
             print(total_insns)
             print(loop_fraction)
@@ -149,6 +155,7 @@ def loop_statistics(loops, block_data, total_program_insns, threads=8):
             "op_hist": dict(op_hist),
         })
     return loop_infos
+
 
 def collapse_loops(G, loops):
     G_copy = G.copy()
@@ -189,6 +196,7 @@ def collapse_loops(G, loops):
 
     return G_copy
 
+
 def build_loop_connectivity_graph(Gc):
     LG = nx.DiGraph()
     loop_nodes = [n for n in Gc.nodes if str(n).startswith("LOOP_")]
@@ -200,15 +208,18 @@ def build_loop_connectivity_graph(Gc):
                 LG.add_edge(ln, succ)
     return LG
 
+
 def compute_reachability(LG):
     reach = {}
     for n in LG.nodes:
         reach[n] = list(nx.descendants(LG, n))
     return reach
 
+
 def compute_components(LG):
     undirected = LG.to_undirected()
     return [list(c) for c in nx.connected_components(undirected)]
+
 
 def compute_dominators(LG):
     doms = {}
@@ -216,12 +227,14 @@ def compute_dominators(LG):
         doms[n] = list(nx.ancestors(LG, n))
     return doms
 
+
 def compute_postdominators(LG):
     RG = LG.reverse(copy=True)
     pdoms = {}
     for n in RG.nodes:
         pdoms[n] = list(nx.ancestors(RG, n))
     return pdoms
+
 
 def compute_parallel_sets(LG, reach, doms, pdoms):
     loops = list(LG.nodes)
@@ -239,16 +252,18 @@ def compute_parallel_sets(LG, reach, doms, pdoms):
             parallel[a].append(b)
     return parallel
 
+
 def safe_pos_layout(G_sub, seed=42):
     try:
         return nx.spring_layout(G_sub, seed=seed)
     except Exception:
         return nx.circular_layout(G_sub)
 
+
 def visualize_cfg(G, out_path="cfg_loops_clustered.png"):
     import matplotlib.patches as mpatches
     plt.figure(figsize=(14, 10))
-    
+
     node_colors = ["tomato" if str(n).startswith("LOOP_") else "skyblue" for n in G.nodes]
     pos = safe_pos_layout(G, seed=1)
 
@@ -256,16 +271,17 @@ def visualize_cfg(G, out_path="cfg_loops_clustered.png"):
     MAX_COORD = 1e6
     for n, p in pos.items():
         try:
-            x = float(p[0]); y = float(p[1])
+            x = float(p[0]);
+            y = float(p[1])
         except Exception:
-            x, y = np.random.rand()*1e-3, np.random.rand()*1e-3
+            x, y = np.random.rand() * 1e-3, np.random.rand() * 1e-3
         if not (math.isfinite(x) and math.isfinite(y)):
-            x, y = np.random.rand()*1e-3, np.random.rand()*1e-3
+            x, y = np.random.rand() * 1e-3, np.random.rand() * 1e-3
         sanitized_pos[n] = (max(min(x, MAX_COORD), -MAX_COORD), max(min(y, MAX_COORD), -MAX_COORD))
 
     nx.draw_networkx_edges(G, sanitized_pos, arrows=True, arrowsize=10, width=0.8, alpha=0.6)
     nx.draw_networkx_nodes(G, sanitized_pos, node_color=node_colors, node_size=700, edgecolors="black", linewidths=0.8)
-    #nx.draw_networkx_labels(G, sanitized_pos, font_size=8)
+    # nx.draw_networkx_labels(G, sanitized_pos, font_size=8)
     loop_patch = mpatches.Patch(color="tomato", label="Loop / Back-edge Region")
     block_patch = mpatches.Patch(color="skyblue", label="Regular Block (Clustered)")
     plt.legend(handles=[loop_patch, block_patch], loc="upper left", fontsize=8)
@@ -275,6 +291,7 @@ def visualize_cfg(G, out_path="cfg_loops_clustered.png"):
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Saved {out_path}")
+
 
 def visualize_meta_cfg(func_graph, functions_by_entry, region_graph, out_path="meta_cfg.png"):
     import matplotlib.patches as mpatches
@@ -315,7 +332,8 @@ def visualize_meta_cfg(func_graph, functions_by_entry, region_graph, out_path="m
 
     pos_reg = safe_pos_layout(LG, seed=99)
     node_colors = ["tomato" for _ in LG.nodes()]
-    nx.draw_networkx_edges(LG, pos_reg, ax=right, arrows=True, arrowstyle='->', arrowsize=10, edge_color='gray', alpha=0.6)
+    nx.draw_networkx_edges(LG, pos_reg, ax=right, arrows=True, arrowstyle='->', arrowsize=10, edge_color='gray',
+                           alpha=0.6)
     nx.draw_networkx_nodes(LG, pos_reg, node_color=node_colors, node_size=700, edgecolors='black')
     nx.draw_networkx_labels(LG, pos_reg, font_size=8, ax=right)
     right.set_title("Loop-level Meta CFG (LOOP_x only)")
@@ -327,8 +345,10 @@ def visualize_meta_cfg(func_graph, functions_by_entry, region_graph, out_path="m
     plt.close()
     print(f"Saved {out_path}")
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Build CFG, detect loops, produce visualizations and extended loops.json (with connectivity).")
+    parser = argparse.ArgumentParser(
+        description="Build CFG, detect loops, produce visualizations and extended loops.json (with connectivity).")
     parser.add_argument("binary", help="Path to binary")
     parser.add_argument("--threads", type=int, default=8, help="Threads assumed for Amdahl estimate")
     args = parser.parse_args()
@@ -380,6 +400,7 @@ def main():
     visualize_cfg(Gc, out_path="cfg_loops_clustered.png")
 
     visualize_meta_cfg(func_graph, functions_by_entry, Gc, out_path="meta_cfg.png")
+
 
 if __name__ == "__main__":
     main()
